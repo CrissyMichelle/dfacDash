@@ -113,11 +113,12 @@ class Dfac {
     /** Find a dfac by dfacID - READ
      * 
      * returns
-     * { dfac: {dfacID, dfacName, dfacLogo, street, bldgNum, city, state, zip, dfacPhone, flashMsg1, flashMsg2,
-     *                  bfHours, luHours, dnHours, bchHours, supHours, orderBf, orderLu, orderDn, orderBch, orderSup} }
+     * { dfac: {dfacDetails: {dfacID, dfacName, dfacLogo, street, bldgNum, city, state, zip, dfacPhone, flashMsg1, flashMsg2,
+     *                  bfHours, luHours, dnHours, bchHours, supHours, orderBf, orderLu, orderDn, orderBch, orderSup},
+     *        meals: [{mealID, dfacID, description, type, price, imgPic, likes}, {mealID, dfacID, ...}, {...}, ... ] }
      */
     static async get(dfacID) {
-        const result = await db.query(
+        const dfacRes = await db.query(
             `SELECT id AS "dfacID",
                     dfac_name AS "dfacName", 
                     dfac_logo AS "dfacLogo", 
@@ -141,11 +142,32 @@ class Dfac {
             [dfacID]
         );
 
-        if (result.rows.length === 0 ) {
+        const mealsRes = await db.query(
+            `SELECT id AS "mealID",
+                            dfac_id AS "dfacID",
+                            meal_name AS "mealName",
+                            description,
+                            type,
+                            price,
+                            img_pic AS "imgPic",
+                            likes
+                FROM meals
+                WHERE dfac_id = $1`,
+            [dfacID]
+        );
+
+        if (dfacRes.rows.length === 0 ) {
             throw new NotFoundError(`No dfac: ${dfacID}`);
         }
+        
+        const meals = [...mealsRes.rows];
 
-        return result.rows[0];
+        const dfacAndMeals = {
+            dfacDetails: dfacRes.rows[0],
+            meals: meals
+        }
+
+        return dfacAndMeals;
     }
 
     /** Supervisors and admin function to Patch dfac data with `data` - UPDATE
