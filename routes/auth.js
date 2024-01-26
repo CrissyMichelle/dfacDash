@@ -141,9 +141,11 @@ router.get("/dfacs", async (req, res, next) => {
  * takes dfacID as a parameter
  * 
  * returns specific dfac data in the response object locals: dfac
- * /auth/dfacs/[dfacID] --> { dfac: {dfacID, dfacName, dfacLogo, street, bldgNum, city, state, zip, dfacPhone, flashMsg1, flashMsg2,
- *                  bfHours, luHours, dnHours, bchHours, supHours, orderBf, orderLu, orderDn, orderBch, orderSup} }
- * 
+ * /auth/dfacs/[dfacID] --> {  dfac:
+ *                              { dfacDetails: {dfacID, dfacName, dfacLogo, street, bldgNum, city, state, zip, dfacPhone, flashMsg1, flashMsg2,
+ *                               bfHours, luHours, dnHours, bchHours, supHours, orderBf, orderLu, orderDn, orderBch, orderSup},
+ *                              meals: [ {mealID, dfacID, description, type, price, imgPic, likes}, {mealID, dfacID, ...}, {...}, ... ] 
+ *                      }
  * Authorization required: none
  */
 router.get("/:dfacID", async (req, res, next) => {
