@@ -62,6 +62,50 @@ class Meal {
         return result.rows;
     }
 
+    /** READ meals with dfac details included
+     * 
+     * Returns similar to findAll meals but JOIN with all dfac data
+     * { meals:  {mealID, dfacID, dfacName, dfacLogo, street, bldgNum, city, state, zip, dfacPhone, flashMsg1, flashMsg2,
+     *                  bfHours, luHours, dnHours, bchHours, supHours, orderBf, orderLu, orderDn, orderBch, orderSup,
+     *                  mealName, description, type, price, imgPic, likes, createdAt}, {mealID, dfacID, dfacName, ...},
+     *              {...}, ...}
+     */
+    static async getWithDfacDeets() {
+        const result = await db.query(
+            `SELECT m.id AS "mealID",
+                    m.dfac_id AS "dfacID",
+                    d.dfac_name AS "dfacName",
+                    d.dfac_logo AS "dfacLogo",
+                    d.street_address AS "street",
+                    d.bldg_num AS "bldgNum",
+                    d.city,
+                    d.state_abb AS "state",
+                    d.zip_code AS "zip",
+                    d.dfac_phnumber AS "dfacPhone",
+                    d.flash_msg1 AS "flashMsg1",
+                    d.flash_msg2 AS "flashMsg2",
+                    d.bf_hours AS "bfHours", 
+                    d.lu_hours AS "luHours", 
+                    d.dn_hours AS "dnHours", 
+                    d.order_timebf AS "orderBf", 
+                    d.order_timelu AS "orderLu", 
+                    d.order_timedn AS "orderDn", 
+                    d.order_timesup AS "orderSup",
+                    m.meal_name AS "mealName",
+                    m.description,
+                    m.type,
+                    m.price,
+                    m.img_pic AS "imgPic",
+                    m.likes,
+                    m.created_at AS "createdAt"
+                FROM meals m
+                JOIN dfacs d ON m.dfac_id = d.id
+                ORDER BY d.dfac_name`
+        );
+
+        return result.rows;
+    }
+
     /** Find a meal by mealID - READ
      * 
      * Returns
