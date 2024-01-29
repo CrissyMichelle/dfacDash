@@ -23,9 +23,11 @@ class Order {
      */
     static async createOrder(customerID, dfacID, mealID, comments = null, toGo = true, quantity = 1, specialInstructions = null) {
         // Starting a database transaction
-        const client = await db.connect();
+        // const client = await db.connect();
 
         try{
+            // await client.query('BEGIN');
+
             // first check customerID and dfacID
             const customerExists = await db.query(
                 `SELECT id from customers
@@ -77,8 +79,8 @@ class Order {
             if (!meal) throw new NotFoundError(`Meal not found: ${mealID}`);
 
             const order_mealsRes = await db.query(
-                `INSERT INTO orders_meals
-                    (order_id, meal_id, quantity)
+                `INSERT INTO order_meals
+                    (order_id, meal_id, quantity, special_instructions)
                     VALUES ($1, $2, $3, $4)
                     RETURNING id AS "orderMealID",            
                                 order_id AS "orderID",
@@ -95,16 +97,16 @@ class Order {
                 orderMealJoin: orderedMeal
             }
 
-            // Commit the transaction only if everything worked
-            await client.query('COMMIT');
+            // // Commit the transaction only if everything worked
+            // await client.query('COMMIT');
 
             return mealOrdered;
         } catch (err) {
-            await client.query('ROLLBACK');
+            // await client.query('ROLLBACK');
             throw err;
-        } finally {
-            // releasing the client back to the pool
-            client.release();
+        // } finally {
+        //     // releasing the client back to the pool
+        //     client.release();
         }
     }
 
