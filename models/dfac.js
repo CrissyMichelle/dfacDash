@@ -86,7 +86,7 @@ class Dfac {
                     dfac_name AS "dfacName", 
                     dfac_logo AS "dfacLogo", 
                     street_address AS "street", 
-                    bldg_num AS bldgNum,
+                    bldg_num AS "bldgNum",
                     city, 
                     state_abb AS "state", 
                     zip_code AS "zip", 
