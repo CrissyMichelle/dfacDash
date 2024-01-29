@@ -9,28 +9,103 @@ const {
 
 class Order {
     /**
-     * Create a new order.
-     * @param {integer} customerId - The ID of the customer placing the order.
-     * @param {integer} dfacId - The ID of the DFAC for which the order is placed.
+     * Create a new order. Requires the following data :
+     * @param {integer} customerID - The ID of the customer placing the order.
+     * @param {integer} dfacID - The ID of the DFAC for which the order is placed.
+     * @param {integer} mealID - The ID of the meal for which the order is placed.
      * @param {string} comments - Additional comments for the order.
      * @param {boolean} toGo - Indicates if the order is for takeout.
      * 
-     * @returns {orderID, customerID, dfacID, comments, toGo, orderDateTime} - The created order.
+     * --The created order is an intermediary response - {orderID, customerID, dfacID,
+     *                                                         comments, toGo, orderDateTime} 
+     *  
+     *  Uses the intermediate response to insert into order_meals
      */
-    static async createOrder(customerID, dfacID, comments = null, toGo = true) {
-        const result = await db.query(
-            `INSERT INTO orders
-                (customer_id, dfac_id, comments, to_go)
-             VALUES ($1, $2, $3, $4)
-             RETURNING id AS "orderID",
-                        customer_id AS "customerID",
+    static async createOrder(customerID, dfacID, mealID, comments = null, toGo = true, quantity = 1, specialInstructions = null) {
+        // Starting a database transaction
+        const client = await db.connect();
+
+        try{
+            // first check customerID and dfacID
+            const customerExists = await db.query(
+                `SELECT id from customers
+                    WHERE id = $1 AND deleted_at IS NULL`,
+                [customerID]
+            );
+            if (customerExists.rows.length <= 0) throw new BadRequestError(`Bad customerID: ${customerID}`);
+
+            const dfacExists = await db.query(
+                `SELECT id from dfacs
+                    WHERE id = $1 AND deleted_at IS NULL`,
+                [dfacID]
+            );
+            if (dfacExists.rows.length <= 0) throw new BadRequestError(`Bad dfacID: ${dfacID}`);
+
+            const ordersRes = await db.query(
+                `INSERT INTO orders
+                    (customer_id, dfac_id, comments, to_go)
+                 VALUES ($1, $2, $3, $4)
+                 RETURNING id AS "orderID",
+                            customer_id AS "customerID",
+                            dfac_id AS "dfacID",
+                            comments,
+                            to_go AS "toGo",
+                            order_timestamp AS "orderDateTime"`,
+                [customerID, dfacID, comments, toGo]
+            );
+
+            const order = ordersRes.rows[0];
+            const orderID = order.orderID;
+
+            const mealRes = await db.query(
+                `SELECT id AS "mealID",
                         dfac_id AS "dfacID",
-                        comments,
-                        to_go AS "toGo",
-                        order_timestamp AS "orderDateTime"`,
-            [customerID, dfacID, comments, toGo]
-        );
-        return result.rows[0];
+                        meal_name AS "mealName",
+                        description,
+                        type,
+                        price,
+                        img_pic AS "imgPic",
+                        likes
+                FROM meals
+                WHERE id = $1`,
+                [mealID]
+            );
+            const meal = mealRes.rows[0];
+            // const mealPrice = mealRes.rows[0].price; is unnecessary.
+            // price_at_order field auto-populates through custom database trigger function
+
+            if (!meal) throw new NotFoundError(`Meal not found: ${mealID}`);
+
+            const order_mealsRes = await db.query(
+                `INSERT INTO orders_meals
+                    (order_id, meal_id, quantity)
+                    VALUES ($1, $2, $3, $4)
+                    RETURNING id AS "orderMealID",            
+                                order_id AS "orderID",
+                                meal_id AS "mealID",
+                                quantity,
+                                special_instructions AS "specialInstructions"`,
+                [orderID, mealID, quantity, specialInstructions]
+            );
+            const orderedMeal = order_mealsRes.rows[0];
+
+            const mealOrdered = {
+                meal: meal,
+                order: order,
+                orderMealJoin: orderedMeal
+            }
+
+            // Commit the transaction only if everything worked
+            await client.query('COMMIT');
+
+            return mealOrdered;
+        } catch (err) {
+            await client.query('ROLLBACK');
+            throw err;
+        } finally {
+            // releasing the client back to the pool
+            client.release();
+        }
     }
 
     /**
