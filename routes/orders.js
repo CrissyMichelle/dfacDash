@@ -8,15 +8,23 @@ const Order = require("../models/order");
  * 
  * Authorization required: none
  * 
- * Accepts { customerID, dfacID, comments, toGo }
+ * Accepts { customerID, dfacID, mealID, comments, toGo, quantity, specialInstructions }
  * 
- * Returns { order: { id, customerID, dfacID, comments, toGo, orderTimestamp, readyForPickup, pickedUp, canceled, favorite } }
+ * Returns { mealOrdered: { meal: {
+ *                                  mealID, dfacID, mealName, description, type, price, imgPic, likes,
+                                    },
+                            order: {orderID, customerID, dfacID, comments, toGo, orderTimestamp, readyForPickup, pickedUp, canceled, favorite 
+                                    },
+                            orderMealJoin: {
+                                orderMealID, orderID, mealID, quantity, specialInstructions
+                                     }
+            }
  */
 router.post("/", async (req, res, next) => {
     try {
-        const { customerID, dfacID, comments, toGo } = req.body;
+        const { customerID, dfacID, mealID, comments, toGo, quantity, specialInstructions } = req.body;
 
-        const order = await Order.createOrder(customerID, dfacID, comments, toGo);
+        const order = await Order.createOrder(customerID, dfacID, mealID, comments, toGo, quantity, specialInstructions);
         return res.status(201).json({ order });
     } catch (err) {
         return next(err);
