@@ -54,4 +54,28 @@ router.get("/:id", async (req, res, next) => {
     }
 });
 
+/** GET /meals/dfac/:id
+ * 
+ * Returns information about meals at a specific dfac.
+ * 
+ * Authorization required: none
+ * 
+ * Returns
+* { dfac: {dfacID, dfacName, dfacLogo, street, bldgNum, city, state, zip, dfacPhone, flashMsg1, flashMsg2,
+*                  bfHours, luHours, dnHours, bchHours, supHours, orderBf, orderLu, orderDn, orderBch, orderSup
+*                  createdAt, updatedAt},
+* meals: [ {mealID, mealName, description, type, price, imgPic, likes, createdAt},
+*      {mealID, mealName, description, ...}, { mealID, ...},
+*              {...}, ... ] 
+*  }
+*/
+router.get("/dfac/:id", async (req, res, next) => {
+    try {
+        const meals = await Meal.getDfacMeals(req.params.id);
+        return res.json({ meals });
+    } catch (err) {
+        return next(err);
+    }
+});
+
 module.exports = router;
