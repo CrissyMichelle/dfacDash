@@ -91,7 +91,10 @@ CREATE TABLE items (
     color_code text,
     sodium_level text,
     item_img text,
-    da_standard text   
+    da_standard text,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp,
+    deleted_at timestamp 
 );
 
 CREATE TABLE meals (

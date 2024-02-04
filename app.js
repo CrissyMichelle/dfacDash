@@ -26,12 +26,13 @@ app.use(morgan("tiny"));
 customerRoutes.use(authenticateJWT);
 cookRoutes.use(authenticateJWT);
 dfacRoutes.use(authenticateJWT);
+itemRoutes.use(authenticateJWT);
 app.use("/customers", customerRoutes);
 app.use("/92G", cookRoutes);
 app.use("/dfacs", dfacRoutes);
+app.use("/items", itemRoutes);
 // routes open to anyone do not require a token
 app.use("/auth", authRoutes);
-app.use("/items", itemRoutes);
 app.use("/meals", mealRoutes);
 app.use("/orders", orderRoutes);
 
