@@ -16,11 +16,11 @@ class Item {
      * 
      * returns 
      *      {itemID, menuItem, foodType, recipeCode, description,
-     *             likes, colorCode, sodiumLvl, regsStandard }
+     *             likes, colorCode, sodiumLvl, itemImage regsStandard }
      */
     static async add(
         { menuItem, foodType, recipeCode=null, description, colorCode=null,
-            sodiumLvl=null, regsStandard=null }
+            sodiumLvl=null, itemImage=null, regsStandard=null }
     ) {
         const duplicateCheck = await db.query(
             `SELECT menu_item from items
@@ -39,8 +39,9 @@ class Item {
                             description,
                             color_code,
                             sodium_level,
+                            item_img,
                             da_standard)
-                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                 RETURNING id AS "itemID",
                             menu_item AS "menuItem",
                             food_type AS "foodType",
@@ -49,6 +50,7 @@ class Item {
                             likes,
                             color_code AS "colorCode",
                             sodium_level AS "sodiumLvl",
+                            item_img AS "itemImage",
                             da_standard AS "regsStandard"`,
             [
                 menuItem,
@@ -57,6 +59,7 @@ class Item {
                 description,
                 colorCode,
                 sodiumLvl,
+                itemImage,
                 regsStandard
             ]
         );
@@ -69,7 +72,7 @@ class Item {
      * 
      * returns 
      *      { items: {itemID, menuItem, foodType, recipeCode, description,
-     *             likes, colorCode, sodiumLvl, regsStandard }, {itemID,...},
+     *             likes, colorCode, sodiumLvl, itemImage, regsStandard }, {itemID,...},
      *              {...}, ...}
     */
     static async findAll() {
@@ -82,6 +85,7 @@ class Item {
                     likes,
                     color_code AS "colorCode",
                     sodium_level AS "sodiumLvl",
+                    item_img AS "itemImage",
                     da_standard AS "regsStandard"
                 FROM items
                 ORDER BY menu_item`
@@ -94,7 +98,7 @@ class Item {
      *          - READ - 
      * 
      * returns { item: {itemID, menuItem, foodType, recipeCode, description,
-     *             likes, colorCode, sodiumLvl, regsStandard }
+     *             likes, colorCode, sodiumLvl, itemImage, regsStandard }
      *          nutrition: {calories, protein, carbs, fat, sodium, cholesterol, sugars}
      *          meals:[{dfacID, mealName, description, type, price, imgPic,  likes, updatedAt},
      *                  {dfacID, ...}, {...}, ...] }
@@ -114,6 +118,7 @@ class Item {
                     likes,
                     color_code AS "colorCode",
                     sodium_level AS "sodiumLvl",
+                    item_img AS "itemImage",
                     da_standard AS "regsStandard"
                 FROM items
                 WHERE id = $1`,
@@ -164,6 +169,58 @@ class Item {
         };
 
         return itemNutritionAndMeals;
+    }
+
+    /** Update an item with `data` - UPDATE
+     * 
+     * Partial update is perfectly acceptable; fields only changed if patch request
+     * includes corresponding data.
+     * 
+     * Allowable data:
+     * { menuItem foodType, recipeCode, description, colorCode, sodiumLvl, itemImage, regsStandard }
+     * 
+     * Returns
+     * { item: {itemID, menuItem foodType, recipeCode, description, likes, colorCode, sodiumLvl, itemImage, regsStandard, createdAt, updatedAt} }
+     *
+     * Throws NotFoundError if itemID not found
+     */
+    static async update(itemID, data) {
+        const { setCols, values } = sqlForPartialUpdate(
+            data,
+            {
+                menuItem: "menu_item",
+                foodType: "food_type",
+                recipeCode: "recipe_code",
+                description: "description",
+                colorCode: "color_code",
+                sodiumLvl: "sodium_level",
+                itemImage: "item_img",
+                regsStandard: "da_standard"
+            }
+        );
+        const itemIDVarIdx = "$" + (values.length + 1);
+
+        const querySql = `UPDATE items
+                            SET ${setCols}, updated_at = CURRENT_TIMESTAMP
+                            WHERE id = ${itemIDVarIdx}
+                            RETURNING id AS "itemID",
+                                    menu_item AS "menuItem",
+                                    food_type AS "foodType",
+                                    recipe_code AS "recipeCode",
+                                    description,
+                                    likes,
+                                    color_code AS "colorCode",
+                                    sodium_level AS "sodiumLvl",
+                                    item_img AS "itemImage",
+                                    da_standard AS "regsStandard",
+                                    created_at AS "createdAt",
+                                    updated_at AS "updatedAt"`;
+        const result = await db.query(querySql, [...values, itemID]);
+
+        const item = result.rows[0];
+        if (!item) throw new NotFoundError(`No item: ${itemID}`);
+
+        return item;
     }
 }
 
