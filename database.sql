@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS surrogates CASCADE;
 DROP TABLE IF EXISTS tags CASCADE;
 DROP TABLE IF EXISTS item_tags CASCADE;
 DROP TABLE IF EXISTS customer_likes CASCADE;
+DROP TABLE IF EXISTS dfac_items CASCADE;
 
 CREATE TABLE customers (
     id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -89,6 +90,7 @@ CREATE TABLE items (
     likes integer DEFAULT 0,
     color_code text,
     sodium_level text,
+    item_img text,
     da_standard text   
 );
 
@@ -200,12 +202,19 @@ CREATE TABLE customer_likes (
     UNIQUE (customer_id, meal_id, item_id)
 );
 
+CREATE TABLE dfac_items (
+    dfac_id integer NOT NULL REFERENCES dfacs(id),
+    item_id integer NOT NULL REFERENCES items(id)
+);
+
 -- Minimal indexing for optimizing performance on common queries
 CREATE INDEX idx_customer_id ON orders(customer_id);
 CREATE INDEX idx_order_id ON order_meals(order_id);
 CREATE INDEX idx_meal_id ON meal_items(meal_id);
 CREATE INDEX idx_surrogate_id ON surrogates(surrogate_id);
 CREATE INDEX idx_item_id ON item_tags(item_id);
+CREATE INDEX idx_dfac_id ON dfac_items(dfac_id);
+CREATE INDEX idx_dfacitem_id ON dfac_items(item_id);
 
 -- Trigger function for recording historical price data
 CREATE OR REPLACE FUNCTION update_price_at_order()
