@@ -70,13 +70,13 @@ router.get("/:id", async (req, res, next) => {
 
 /** PATCH /orders/:id
  * 
- * Updates information about a specific order.
+ * Updates information about a specific order.Accepts a variable amount of allowable data
  * 
  * Authorization required: none
  * 
- * Accepts { comments, toGo, readyForPickup, pickedUp, canceled, favorite }
+ * Accepts { comments, toGo, readyTime, pickedUpTime, canceled, favorite }
  * 
- * Returns { order: { id, customerID, dfacID, comments, toGo, orderTimestamp, readyForPickup, pickedUp, canceled, favorite, createdAt, updatedAt } }
+ * Returns { order: { id, customerID, dfacID, comments, toGo, orderDateTime, readyForPickup, pickedUp, canceled, favorite } }
  */
 router.patch("/:id", async (req, res, next) => {
     try {

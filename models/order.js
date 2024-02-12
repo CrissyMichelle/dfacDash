@@ -195,17 +195,45 @@ class Order {
     }
 
     /**
-     * Update the status of an order.
-     * @param {integer} orderId - The ID of the order to update.
-     * @param {Object} updates - The updates to apply (e.g., { readyForPickup: new Date() }).
-     * @returns {Promise<Object>} - The updated order.
+     * Update the status of an order. Accepts a variable amount of allowable data
+     *
+     * 
+     * Authorization required: none
+     * 
+     * Accepts { comments, toGo, readyTime, pickedUpTime, canceled, favorite }
+     * 
+     * Returns { order: { id, customerID, dfacID, comments, toGo, orderDateTime, readyForPickup, pickedUp, canceled, favorite } }
      */
     static async updateOrderStatus(orderId, updates) {
-        const { setCols, values } = sqlForPartialUpdate(updates);
+        const { setCols, values } = sqlForPartialUpdate(
+            updates,
+            {
+                comments: "comments",
+                to_go: "toGo",
+                ready_for_pickup: "readyTime",
+                picked_up: "pickedUpTime",
+                canceled: "canceled",
+                favorite: "favorite"
+            }
+        );
+
+        const orderIDVarIdx = "$" + (values.length + 1);
+
         const querySql = `UPDATE orders
                             SET ${setCols}
-                            WHERE id = $1
-                            RETURNING *`;
+                            WHERE id = ${orderIDVarIdx}
+                            RETURNING id AS "orderID",
+                                customer_id AS "customerID",
+                                dfac_id AS "dfacID",
+                                comments,
+                                to_go AS "toGo",
+                                order_timestamp AS "orderDateTime",
+                                ready_for_pickup AS "readyTime",
+                                picked_up AS "pickedUpTime",
+                                canceled,
+                                favorite`;
+        console.log("SQL query from updateOrderStatus: ", querySql);
+        console.log("Values for SQL query call: ", values);
         const result = await db.query(querySql, [...values, orderId]);
 
         return result.rows[0];
