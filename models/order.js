@@ -123,8 +123,10 @@ class Order {
 
     /**
      * Get an order by orderID
-     * returns { orderID, customerID, dfacID, comments, orderDateTime, readyTime,
-     *              pickedUpTime, canceled, favorite }
+     * returns { order: {orderID, dfacID, comments, orderDateTime, readyTime,
+     *              pickedUpTime, canceled, favorite},
+     *            meal: {mealID, dfacID, mealName, description, type, price,
+     *              imgPic, likes, updatedAt} }
      */
     static async get(orderID) {
         const orderRes = await db.query(
