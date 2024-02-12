@@ -146,6 +146,7 @@ CREATE TABLE orders (
     ready_for_pickup timestamp,
     picked_up timestamp,
     canceled boolean,
+    canceled_at timestamp,
     favorite boolean NOT NULL DEFAULT FALSE
 );
 

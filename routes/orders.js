@@ -76,7 +76,7 @@ router.get("/:id", async (req, res, next) => {
  * 
  * Accepts { comments, toGo, readyTime, pickedUpTime, canceled, favorite }
  * 
- * Returns { order: { id, customerID, dfacID, comments, toGo, orderDateTime, readyForPickup, pickedUp, canceled, favorite } }
+ * Returns { order: { id, customerID, dfacID, comments, toGo, orderDateTime, readyForPickup, pickedUp, canceled, canceledAtTime, favorite } }
  */
 router.patch("/:id", async (req, res, next) => {
     try {

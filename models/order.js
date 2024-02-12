@@ -137,6 +137,7 @@ class Order {
                     ready_for_pickup AS "readyTime",
                     picked_up AS "pickedUpTime",
                     canceled,
+                    canceled_at AS "canceledAtTime",
                     favorite
                 FROM orders
                 WHERE id = $1`,
@@ -202,10 +203,10 @@ class Order {
      * 
      * Accepts { comments, toGo, readyTime, pickedUpTime, canceled, favorite }
      * 
-     * Returns { order: { id, customerID, dfacID, comments, toGo, orderDateTime, readyForPickup, pickedUp, canceled, favorite } }
+     * Returns { order: { id, customerID, dfacID, comments, toGo, orderDateTime, readyForPickup, pickedUp, canceled, canceledAtTime, favorite } }
      */
     static async updateOrderStatus(orderId, updates) {
-        const { setCols, values } = sqlForPartialUpdate(
+        let { setCols, values } = sqlForPartialUpdate(
             updates,
             {
                 comments: "comments",
@@ -216,6 +217,11 @@ class Order {
                 favorite: "favorite"
             }
         );
+
+        // if 'canceled' is being set to true, append current time to canceled_at field
+        if (updates.canceled) {
+            setCols += setCols.includes('canceled') ? `, canceled_at = CURRENT_TIMESTAMP` : '';
+        }
 
         const orderIDVarIdx = "$" + (values.length + 1);
 
@@ -231,6 +237,7 @@ class Order {
                                 ready_for_pickup AS "readyTime",
                                 picked_up AS "pickedUpTime",
                                 canceled,
+                                canceled_at AS "canceledAtTime",
                                 favorite`;
         console.log("SQL query from updateOrderStatus: ", querySql);
         console.log("Values for SQL query call: ", values);
