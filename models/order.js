@@ -211,8 +211,8 @@ class Order {
             {
                 comments: "comments",
                 to_go: "toGo",
-                ready_for_pickup: "readyTime",
-                picked_up: "pickedUpTime",
+                ready_for_pickup: "ready_for_pickup",
+                picked_up: "picked_up",
                 canceled: "canceled",
                 favorite: "favorite"
             }
