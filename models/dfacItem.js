@@ -233,6 +233,33 @@ class DfacItem {
         return { taggedItems };
     }
 
+    /** Find dfac items by dfacID - READ
+     * 
+     * Returns array of items that match the specified DFAC
+     *
+     */
+    static async findByDfac(dfacID) {
+        const result = await db.query(
+            `SELECT i.id AS "itemID",
+                    i.menu_item AS "menuItem",
+                    i.food_type AS "foodType",
+                    i.recipe_code AS "recipeCode",
+                    i.description,
+                    i.likes,
+                    i.color_code AS "colorCode",
+                    i.sodium_level AS "sodiumLvl",
+                    i.item_img AS "itemImage",
+                    i.da_standard AS "regsStandard",
+                    di.dfac_id AS "dfacID"
+                FROM items i
+                JOIN dfac_items di ON i.id = di.item_id
+                WHERE di.dfac_id = $1`,
+            [dfacID]
+        );
+
+        return result.rows;
+    }
+
     /** Update an item's tags with `data` - UPDATE
      * 
      * Partial update is perfectly acceptable; fields only changed if patch request
