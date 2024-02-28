@@ -315,4 +315,16 @@ INSERT INTO dfac_items (dfac_id, item_id) VALUES
     ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'ITALIAN PASTA SALAD 2.25OZ')),
     ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'SPAGHETTI 8OZ')),
     ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'HOT ROLLS 2ROLLS')),
-    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'MINESTRONE SOUP 8OZ'));
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'MINESTRONE SOUP 8OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'BOILED EGGS 2EGGS')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'GRITS 6OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'HERBED BAKED CHICKEN QTRS')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'CANDIED SWEET POTATOES 5.5OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'POTATO SALAD 5.75OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'CHICKEN NOODLE SOUP 8OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'MEATLOAF 5.5OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'NOODLES JEFFERSON 3.75OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'BARBECUED SPARE RIBS 1PC')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'GARLIC ROASTED POTATOES 3.24OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'CORN 4OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Wings of Lightning Inn'), (SELECT id FROM items WHERE menu_item = 'CREAM OF MUSHROOM SOUP 8.5OZ'));
