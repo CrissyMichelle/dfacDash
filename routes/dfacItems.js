@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+// const { authenticateJWT, ensureLoggedIn } = require("../middleware/auth");
 const DfacItem = require("../models/dfacItem");
 
 /** POST /dfac-item/[dfacID]/[itemID]
@@ -17,91 +18,108 @@ const DfacItem = require("../models/dfacItem");
  *                      likes, colorCode, sodiumLvl, itemImage, regsStandard}
  *          }
  */
-router.post("/:dfacID/:itemID", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
-    try {
-        const dfacTarget = parseInt(req.params.dfacID, 10);
-        const requestorDfacID = res.locals.user.dfacID;
+// router.post("/:dfacID/:itemID", authenticateJWT, ensureLoggedIn, async (req, res, next) => {
+//     try {
+//         const dfacTarget = parseInt(req.params.dfacID, 10);
+//         const requestorDfacID = res.locals.user.dfacID;
 
-        console.log("Requestor DFAC ID: ", requestorDfacID, "Target DFAC ID: ", dfacTarget);
-        console.log("User object: ", res.locals.user);
-        if (res.locals.user.isAdmin) {
-            const dfacItem = await DfacItem.add(req.params.dfacID, req.params.itemID);
-            return res.json({ dfacItem });
-        } else if (requestorDfacID === dfacTarget && res.locals.user.canUpdateMenu) {
-            const dfacItem = await DfacItem.add(req.params.dfacID, req.params.itemID);
-            return res.json({ dfacItem });
-        } else {
-            throw new ForbiddenError("Access denied");
+//         console.log("Requestor DFAC ID: ", requestorDfacID, "Target DFAC ID: ", dfacTarget);
+//         console.log("User object: ", res.locals.user);
+//         if (res.locals.user.isAdmin) {
+//             const dfacItem = await DfacItem.add(req.params.dfacID, req.params.itemID);
+//             return res.json({ dfacItem });
+//         } else if (requestorDfacID === dfacTarget && res.locals.user.canUpdateMenu) {
+//             const dfacItem = await DfacItem.add(req.params.dfacID, req.params.itemID);
+//             return res.json({ dfacItem });
+//         } else {
+//             throw new ForbiddenError("Access denied");
+//         }
+//     } catch (err) {
+//         return next(err);
+//     }
+// });
+
+/** GET all items associated with that DFAC */
+router.get("/:dfacID/items", async (req, res, next) => {
+    try {
+        const dfacID = parseInt(req.params.dfacID, 10);
+        if (isNaN(dfacID)) {
+            return res.status(400).send("Dfac ID must be a valid number");
         }
-    } catch (err) {
-        return next(err);
-    }
-});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/** GET /orders
- * 
- * Returns list of all orders.
- * 
- * Authorization required: none
- * 
- * Returns { orders: [ { id, customerID, dfacID, comments, toGo, orderTimestamp, readyForPickup, pickedUp, canceled, favorite }, ...] }
- */
-router.get("/", async (req, res, next) => {
-    try {
-        const orders = await Order.getAllOrders();
-        return res.json({ orders });
-    } catch (err) {
-        return next(err);
-    }
-});
-
-/** GET /orders/:id
- * 
- * Returns information about a specific order.
- * 
- * Authorization required: none
- * 
- * Returns { order: { id, customerID, dfacID, comments, toGo, orderTimestamp, readyForPickup, pickedUp, canceled, favorite } }
- */
-router.get("/:id", async (req, res, next) => {
-    try {
-        const order = await Order.get(req.params.id);
-        return res.json({ order });
-    } catch (err) {
-        return next(err);
-    }
-});
-
-/** PATCH /orders/:id
- * 
- * Updates information about a specific order.
- * 
- * Authorization required: none
- * 
- * Accepts { comments, toGo, readyForPickup, pickedUp, canceled, favorite }
- * 
- * Returns { order: { id, customerID, dfacID, comments, toGo, orderTimestamp, readyForPickup, pickedUp, canceled, favorite, createdAt, updatedAt } }
- */
-router.patch("/:id", async (req, res, next) => {
-    try {
-        const order = await Order.updateOrderStatus(req.params.id, req.body);
-        return res.json({ order });
+        const dfacItems = await DfacItem.findByDfac(dfacID);
+        return res.json({ dfacItems });
     } catch (err) {
         return next(err);
     }
 });
 
 module.exports = router;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// /** GET /orders
+//  * 
+//  * Returns list of all orders.
+//  * 
+//  * Authorization required: none
+//  * 
+//  * Returns { orders: [ { id, customerID, dfacID, comments, toGo, orderTimestamp, readyForPickup, pickedUp, canceled, favorite }, ...] }
+//  */
+// router.get("/", async (req, res, next) => {
+//     try {
+//         const orders = await Order.getAllOrders();
+//         return res.json({ orders });
+//     } catch (err) {
+//         return next(err);
+//     }
+// });
+
+// /** GET /orders/:id
+//  * 
+//  * Returns information about a specific order.
+//  * 
+//  * Authorization required: none
+//  * 
+//  * Returns { order: { id, customerID, dfacID, comments, toGo, orderTimestamp, readyForPickup, pickedUp, canceled, favorite } }
+//  */
+// router.get("/:id", async (req, res, next) => {
+//     try {
+//         const order = await Order.get(req.params.id);
+//         return res.json({ order });
+//     } catch (err) {
+//         return next(err);
+//     }
+// });
+
+// /** PATCH /orders/:id
+//  * 
+//  * Updates information about a specific order.
+//  * 
+//  * Authorization required: none
+//  * 
+//  * Accepts { comments, toGo, readyForPickup, pickedUp, canceled, favorite }
+//  * 
+//  * Returns { order: { id, customerID, dfacID, comments, toGo, orderTimestamp, readyForPickup, pickedUp, canceled, favorite, createdAt, updatedAt } }
+//  */
+// router.patch("/:id", async (req, res, next) => {
+//     try {
+//         const order = await Order.updateOrderStatus(req.params.id, req.body);
+//         return res.json({ order });
+//     } catch (err) {
+//         return next(err);
+//     }
+// });
+
+// module.exports = router;

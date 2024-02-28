@@ -13,6 +13,7 @@ const customerRoutes = require("./routes/customers");
 const cookRoutes = require("./routes/cooks");
 const dfacRoutes = require("./routes/dfacs");
 const itemRoutes = require("./routes/items");
+const dfacItemsRoutes = require("./routes/dfacItems");
 const mealRoutes = require("./routes/meals");
 const orderRoutes = require("./routes/orders");
 const authRoutes = require("./routes/auth");
@@ -31,10 +32,12 @@ app.use("/customers", customerRoutes);
 app.use("/92G", cookRoutes);
 app.use("/dfacs", dfacRoutes);
 app.use("/items", itemRoutes);
+
 // routes open to anyone do not require a token
 app.use("/auth", authRoutes);
 app.use("/meals", mealRoutes);
 app.use("/orders", orderRoutes);
+app.use("/dfac-items", dfacItemsRoutes);
 
 // Handle most errors with 404
 app.use((req, res, next) => {

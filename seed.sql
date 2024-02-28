@@ -302,3 +302,17 @@ INSERT INTO surrogates (order_id, customer_id, surrogate_id, meal_id, authorizat
         (SELECT id FROM meals WHERE meal_name = 'Lunch #2' AND dfac_id = 2), 'SignedAuthorization.pdf'),
     ((SELECT id FROM orders WHERE dfac_id = 2 AND comments = 'Pick-up by Bilbo Baggins for Auntie Ursula'), (SELECT id FROM customers WHERE username = 'customer5'), (SELECT id FROM customers WHERE username = 'customer3'),
         (SELECT id FROM meals WHERE meal_name = 'Lunch #2' AND dfac_id = 2), 'SignedAuthorization.pdf');
+
+INSERT INTO dfac_items (dfac_id, item_id) VALUES
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'FRENCH TOAST 2SLICE')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'BROCCOLI W SAUTEED ONION')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'LASAGNA 10OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'ROSEMARY POTATOES 3OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'ASPARAGUS 2.75OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'STEAMED CALIFORNIA BLEND 3.25OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'TOASTED GARLIC BREAD 2SLICE')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'CREAM OF BROCCOLI SOUP 9OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'ITALIAN PASTA SALAD 2.25OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'SPAGHETTI 8OZ')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'HOT ROLLS 2ROLLS')),
+    ((SELECT id FROM dfacs WHERE dfac_name = 'Warrior Inn Restaurant'), (SELECT id FROM items WHERE menu_item = 'MINESTRONE SOUP 8OZ'));
